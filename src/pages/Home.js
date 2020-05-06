@@ -35,7 +35,7 @@ import ClaimForm from '../components/ClaimForm'
 import AgentCard from '../components/AgentCard'
 import RegisterForm from '../components/RegisterForm'
 import Profile from '../components/Profile'
-import { amountFormatter, isAddress, getContract, getEtherscanLink, delay } from '../utils'
+import { amountFormatter, getContract, getEtherscanLink, delay } from '../utils'
 import {
   calculateLeftUnits,
   calculateUnderlyingEth,
@@ -205,10 +205,23 @@ export default function Home() {
     }
   }, [account])
 
-  const agentAddress = useMemo(
-    () => localStorage.getItem('agentAddress') || ethers.constants.AddressZero,
-    [],
-  )
+  const [isContractAccount, setIsContractAccount] = useState(false)
+  useEffect(() => {
+    if (readOnlyLibrary && account) {
+      readOnlyLibrary.getCode(account)
+        .then(code => {
+          if (code.slice(2)) {
+            setIsContractAccount(true)
+          } else {
+            setIsContractAccount(false)
+          }
+        })
+    }
+  }, [account, readOnlyLibrary])
+
+  const agentType = useMemo(() => localStorage.getItem('agentType') || 'address', [])
+  const agentSlug = useMemo(() => localStorage.getItem('agentSlug') || ethers.constants.AddressZero, [])
+
   const [agentState, dispatchAgentState] = useReducer(agentReducer, {
     isAgent: false,
   })
@@ -216,14 +229,14 @@ export default function Home() {
     isAgent,
     id: agentId,
     name: agentName,
+    address: agentAddress,
     level: agentLevel,
     image: agentImage,
     greeting: agentGreeting,
   } = agentState
   useEffect(() => {
     if (
-      isAddress(agentAddress) &&
-      agentAddress !== ethers.constants.AddressZero &&
+      agentType && agentSlug &&
       (chainId || chainId === 0) &&
       readOnlyLibrary
     ) {
@@ -233,11 +246,29 @@ export default function Home() {
         INSURANCE_ABI,
         readOnlyLibrary,
       )
-      Promise.all([
-        contract.player(agentAddress),
-        window.Box.getProfile(agentAddress),
-        window.Box.getSpace(agentAddress, BOX_SPACE)
-      ]).then(([player, profile, space]) => {
+      async function getPlayerInfo() {
+        try {
+          let address
+          if (agentType === 'id') {
+            const id = parseInt(agentSlug)
+            address = await contract.agentxID_(id)
+          } else if (agentType === 'name') {
+            const name = ethers.utils.formatBytes32String(agentSlug)
+            address = await contract.agentxName_(name)
+          } else {
+            address = agentSlug
+          }
+          
+          if (address === ethers.constants.AddressZero) {
+            throw Error('no account')
+          }
+
+          const [player, profile, space] = await Promise.all([
+            contract.player(address),
+            window.Box.getProfile(address),
+            window.Box.getSpace(address, BOX_SPACE)
+          ])
+          
           if (!stale) {
             dispatchAgentState({
               type: UPDATE_AGENT,
@@ -245,15 +276,14 @@ export default function Home() {
                 isAgent: player.isAgent,
                 id: player.id,
                 name: ethers.utils.parseBytes32String(player.name),
-                address: agentAddress,
+                address: address,
                 level: player.level,
                 image: profile.image ? `https://ipfs.infura.io/ipfs/${profile.image[0].contentUrl['/']}` : '',
                 greeting: space.remark || '',
               },
             })
           }
-        })
-        .catch(() => {
+        } catch {
           if (!stale) {
             dispatchAgentState({
               type: UPDATE_AGENT,
@@ -267,13 +297,16 @@ export default function Home() {
               },
             })
           }
-        })
+        }
+      }
+
+      getPlayerInfo()
 
       return () => {
         stale = true
       }
     }
-  }, [agentAddress, chainId, readOnlyLibrary])
+  }, [agentSlug, agentType, chainId, readOnlyLibrary])
 
   const odd = useMemo(() => {
     if (pot && totalInsurances && !totalInsurances.isZero() && sharePrice) {
@@ -363,12 +396,22 @@ export default function Home() {
           basePrice
             .times(discount)
             .div(ethers.constants.WeiPerEther.toString())
+            .plus(ethers.constants.One.toString())
             .toFixed(0),
         )
         try {
-          const tx = await contract['buy(address,uint256)'](agentAddress, days, {
-            value,
-          })
+          let tx
+          if (isContractAccount) {
+            tx = await contract['buy()']({ value })
+          } else if (agentType === 'id') {
+            const id = parseInt(agentSlug)
+            tx = await contract['buy(uint256,uint256)'](id, days, { value })
+          } else if (agentType === 'name') {
+            const name = ethers.utils.formatBytes32String(agentSlug)
+            tx = await contract['buy(bytes32,uint256)'](name, days, { value })
+          } else if (agentType === 'address') {
+            tx = await contract['buy(address,uint256)'](agentSlug, days, { value })
+          }
           const firstSnackbar = enqueueSnackbar('Waiting for purchasing.', {
             variant: 'info',
             persist: true,
@@ -384,11 +427,11 @@ export default function Home() {
           })
           refresh()
         } catch {
-          throw Error('Fail to purchse.')
+          throw Error('Fail to purchase.')
         }
       }
     },
-    [account, agentAddress, chainId, closeSnackbar, contract, enqueueSnackbar, refresh, totalShares],
+    [account, agentSlug, agentType, chainId, closeSnackbar, contract, enqueueSnackbar, isContractAccount, refresh, totalShares],
   )
 
   const withdraw = useCallback(async () => {
@@ -554,6 +597,7 @@ export default function Home() {
               <>
                 <Box flex justifyContent='center'>
                   <PurchaseForm
+                    isContractAccount={isContractAccount}
                     shares={shares ? amountFormatter(shares, 18) : '-'}
                     insurances={
                       insurances ? amountFormatter(insurances, 18) : '-'
@@ -667,7 +711,7 @@ export default function Home() {
                   canUpgrade={points && pointsMax && points.gte(pointsMax)}
                   onUpgrade={upgrade}
                   isLoggedIn={isLoggedIn}
-                  avatar={profile.image ? profile.image[0].contentUrl['/'] : ''}
+                  avatar={profile && profile.image ? profile.image[0].contentUrl['/'] : ''}
                   activate={activate}
                   remark={remark}
                   onSaveRemark={onSaveRemark}

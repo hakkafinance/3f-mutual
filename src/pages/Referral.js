@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouteMatch, Redirect } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
-import { ethers } from 'ethers'
-import { getContract } from '../utils'
-import { INSURANCE_ADDRESSES, READ_ONLY } from '../constants'
-import INSURANCE_ABI from '../constants/abis/insurance.json'
+import { READ_ONLY } from '../constants'
 
 export default function Referral() {
   const { params } = useRouteMatch()
@@ -14,36 +11,27 @@ export default function Referral() {
 
   const [isFinished, setIsFinish] = useState(false)
   useEffect(() => {
-    let stale = false
-    async function getAgentInfo() {
-      if ((chainId || chainId === 0) && library && slug) {
-        const contract = getContract(
-          INSURANCE_ADDRESSES[chainId],
-          INSURANCE_ABI,
-          library,
-        )
-        let address
-        if (slug.match(/^\d+$/)) {
-          const id = parseInt(slug)
-          address = await contract.agentxID_(id)
-        } else if (slug.match(/^0[xX][0-9a-fA-F]{40}$/)) {
-          address = slug
-        } else if (slug.match(/^[0-9a-zA-Z ]{1,32}$/)) {
-          const name = ethers.utils.formatBytes32String(slug)
-          address = await contract.agentxName_(name)
-        }
-        localStorage.setItem('agentAddress', address)
-        setTimeout(() => {
-          if (!stale) {
-            setIsFinish(true)
-          }
-        }, 300)
+    if ((chainId || chainId === 0) && library && slug) {
+      let stale = false
+      let agentType
+      if (slug.match(/^\d+$/)) {
+        agentType = 'id'
+      } else if (slug.match(/^0[xX][0-9a-fA-F]{40}$/)) {
+        agentType = 'address'
+      } else if (slug.match(/^[0-9a-zA-Z ]{1,32}$/)) {
+        agentType = 'name'
       }
-    }
-    getAgentInfo()
+      localStorage.setItem('agentType', agentType)
+      localStorage.setItem('agentSlug', slug)
+      setTimeout(() => {
+        if (!stale) {
+          setIsFinish(true)
+        }
+      })
 
-    return () => {
-      stale = true
+      return () => {
+        stale = true
+      }
     }
   }, [chainId, library, slug])
 

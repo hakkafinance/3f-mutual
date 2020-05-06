@@ -17,6 +17,7 @@ const Summary = styled.div`
 
 export default function PurchaseForm(props) {
   const {
+    isContractAccount = false,
     shares = 0,
     insurances = 0,
     lastBought,
@@ -26,7 +27,7 @@ export default function PurchaseForm(props) {
     onSubmit = () => {},
   } = props
 
-  const [amount, setAmount] = useState('')
+  const [amount, setAmount] = useState(isContractAccount ? 0 : '')
   const [period, setPeriod] = useState('')
   const [isPending, setIsPending] = useState(false)
   const [errorMessage, setErrorMessage] = useState()
@@ -95,20 +96,22 @@ export default function PurchaseForm(props) {
           value={amount}
           onChange={event => setAmount(event.target.value)}
         />
-        <TextField
-          type='number'
-          label='Time:'
-          placeholder='0 ~ 100 days'
-          step='1'
-          value={period}
-          onChange={event => {
-            if (event.target.value) {
-              setPeriod(Math.min(Math.abs(Math.round(event.target.value)), 100))
-            } else {
-              setPeriod('')
-            }
-          }}
-        />
+        {!isContractAccount &&
+          <TextField
+            type='number'
+            label='Time:'
+            placeholder='0 ~ 100 days'
+            step='1'
+            value={period}
+            onChange={event => {
+              if (event.target.value) {
+                setPeriod(Math.min(Math.abs(Math.round(event.target.value)), 100))
+              } else {
+                setPeriod('')
+              }
+            }}
+          />
+        }
         {paid && (
           <Summary>
             You will pay <Bold>{paid}</Bold>

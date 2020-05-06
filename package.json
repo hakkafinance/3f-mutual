@@ -1,7 +1,8 @@
 {
-  "name": "maker-insurance-frontend",
+  "name": "3f-mutual-frontend",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://sai.mkdi.club",
   "dependencies": {
     "3box": "^1.18.1",
     "@material-ui/core": "^4.9.12",
@@ -23,7 +24,7 @@
     "i18next-browser-languagedetector": "^4.0.1",
     "i18next-xhr-backend": "^3.2.2",
     "notistack": "^0.9.11",
-    "plotly.js": "^1.53.0",
+    "plotly.js": "^1.54.1",
     "plotly.js-basic-dist": "^1.53.0",
     "plotly.js-dist": "^1.53.0",
     "polished": "^3.5.1",
@@ -42,15 +43,17 @@
   },
   "devDependencies": {
     "eslint": "^6.6.0",
+    "gh-pages": "^2.2.0",
     "husky": "^3.0.5",
     "prettier": "1.18.2",
     "pretty-quick": "^1.11.1"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts --max_old_space_size=4096 build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
