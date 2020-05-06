@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.js": "/static/js/main.10b668fe.chunk.js",
+    "main.js.map": "/static/js/main.10b668fe.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.e9d132f9.js",
+    "runtime-main.js.map": "/static/js/runtime-main.e9d132f9.js.map",
+    "static/js/2.26437f41.chunk.js": "/static/js/2.26437f41.chunk.js",
+    "static/js/2.26437f41.chunk.js.map": "/static/js/2.26437f41.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.3851935117033494379112eab512ed41.js": "/precache-manifest.3851935117033494379112eab512ed41.js",
+    "service-worker.js": "/service-worker.js",
+    "static/js/2.26437f41.chunk.js.LICENSE.txt": "/static/js/2.26437f41.chunk.js.LICENSE.txt",
+    "static/media/background.svg": "/static/media/background.d155fef4.svg",
+    "static/media/clock.bfd03a74.svg": "/static/media/clock.bfd03a74.svg",
+    "static/media/copy.9b9cb11e.svg": "/static/media/copy.9b9cb11e.svg",
+    "static/media/ethereum.936922af.svg": "/static/media/ethereum.936922af.svg",
+    "static/media/jumbotron-background.svg": "/static/media/jumbotron-background.02fad98e.svg",
+    "static/media/logo.8edab182.svg": "/static/media/logo.8edab182.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.e9d132f9.js",
+    "static/js/2.26437f41.chunk.js",
+    "static/js/main.10b668fe.chunk.js"
+  ]
+}
