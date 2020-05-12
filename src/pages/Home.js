@@ -314,7 +314,10 @@ export default function Home() {
         .mul(ethers.constants.WeiPerEther)
         .div(totalInsurances)
         .mul(ethers.constants.WeiPerEther)
-        .div(sharePrice)
+        .div(sharePrice
+          .mul(ethers.BigNumber.from(insuranceRatesByDay[1]).add(ethers.constants.WeiPerEther))
+          .div(ethers.constants.WeiPerEther)
+        )
     }
   }, [pot, sharePrice, totalInsurances])
   
