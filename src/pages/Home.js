@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useReducer,
 } from 'react'
+import useSWR from 'swr'
 import { useSnackbar } from 'notistack'
 import { useWeb3React } from '@web3-react/core'
 import { ethers } from 'ethers'
@@ -35,6 +36,7 @@ import ClaimForm from '../components/ClaimForm'
 import AgentCard from '../components/AgentCard'
 import RegisterForm from '../components/RegisterForm'
 import Profile from '../components/Profile'
+import Leaderboard from '../components/Leaderboard'
 import { amountFormatter, getContract, getEtherscanLink, delay } from '../utils'
 import {
   calculateLeftUnits,
@@ -185,21 +187,24 @@ export default function Home() {
 
   const [remark, setRemark] = useState()
   useEffect(() => {
-    window.Box.getSpace(account, BOX_SPACE)
-      .then(space => {
-        setRemark(space.remark || '')
-      })
+    if (window.Box) {
+      window.Box.getSpace(account, BOX_SPACE)
+        .then(space => {
+          setRemark(space.remark || '')
+        })
+    }
   }, [account])
 
   const onSaveRemark = useCallback(async (remark) => {
     try {
-      console.log(remark)
-      const box = await window.Box.openBox(account, window.ethereum)
-      await box.syncDone
-      const space = await box.openSpace(BOX_SPACE)
-      await space.syncDone
-      await space.public.set('remark', remark)
-      setRemark(remark)
+      if (window.Box) {
+        const box = await window.Box.openBox(account, window.ethereum)
+        await box.syncDone
+        const space = await box.openSpace(BOX_SPACE)
+        await space.syncDone
+        await space.public.set('remark', remark)
+        setRemark(remark)
+      }
     } catch  {
       throw Error('Fail to Save the remark')
     }
@@ -307,6 +312,15 @@ export default function Home() {
       }
     }
   }, [agentSlug, agentType, chainId, readOnlyLibrary])
+
+  const { data: agentsData } = useSWR('https://api.3fmutual.com/agents')
+  const sortedAgents = useMemo(() => {
+    if (agentsData) {
+      return agentsData.data
+        .sort((a, b) => b.accumulatedRef - a.accumulatedRef)
+        .slice(0, 10)
+    }
+  }, [agentsData])
 
   const odd = useMemo(() => {
     if (pot && totalInsurances && !totalInsurances.isZero() && sharePrice) {
@@ -549,6 +563,7 @@ export default function Home() {
     { text: 'Vault', index: 1 },
     { text: 'Agent', index: 2, badge: isAgent },
     { text: 'Profile', index: 3 },
+    { text: 'Leaderboard', index: 4 },
   ]
   const [tabIndex, setTabIndex] = useState(0)
 
@@ -722,6 +737,11 @@ export default function Home() {
               ) : (
                 <RegisterForm onSubmit={register} />
               )}
+            </Box>
+          </TabPanel>
+          <TabPanel value={tabIndex} index={4}>
+            <Box flex direction='column' alignItems='center'>
+              <Leaderboard agents={sortedAgents} />
             </Box>
           </TabPanel>
         </Container>

@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react'
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
+import { SWRConfig } from 'swr'
 import { Web3ReactProvider, createWeb3ReactRoot } from '@web3-react/core'
 import { SnackbarProvider } from 'notistack'
 import { ethers } from 'ethers'
@@ -63,26 +64,33 @@ function Router() {
 
 function App() {
   return (
-    <Web3ReactProvider getLibrary={getLibrary}>
-      <Web3ReadOnlyProvider getLibrary={getLibrary}>
-        <Web3Manager>
-          <ContextProviders>
-            <Updaters />
-            <ThemeProvider>
-              <GlobalStyle />
-              <SnackbarProvider
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-              >
-                <Router />
-              </SnackbarProvider>
-            </ThemeProvider>
-          </ContextProviders>
-        </Web3Manager>
-      </Web3ReadOnlyProvider>
-    </Web3ReactProvider>
+    <SWRConfig
+      value={{
+        refreshInterval: 15000,
+        fetcher: (...args) => fetch(...args).then(res => res.json())
+      }}
+    >
+      <Web3ReactProvider getLibrary={getLibrary}>
+        <Web3ReadOnlyProvider getLibrary={getLibrary}>
+          <Web3Manager>
+            <ContextProviders>
+              <Updaters />
+              <ThemeProvider>
+                <GlobalStyle />
+                <SnackbarProvider
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  }}
+                >
+                  <Router />
+                </SnackbarProvider>
+              </ThemeProvider>
+            </ContextProviders>
+          </Web3Manager>
+        </Web3ReadOnlyProvider>
+      </Web3ReactProvider>
+    </SWRConfig>
   )
 }
 
