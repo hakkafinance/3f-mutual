@@ -43,7 +43,7 @@ export default function ClaimForm(props) {
           <Bold>Estimated Compensation:</Bold> {estimatedCompensation} <EthereumIcon />
         </Text>
         <Text error>{errorMessage}</Text>
-        <Button disabled={isPending || !canClaim} onClick={onClickButton}>
+        <Button disabled={isPending || !canClaim || parseFloat(insurances) === 0} onClick={onClickButton}>
           {isPending ? 'Pending...' : 'Claim'}
         </Button>
       </CardContent>
