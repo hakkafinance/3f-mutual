@@ -6,7 +6,7 @@ import { WalletConnectConnector } from './Walletconnect'
 const POLLING_INTERVAL = 8000
 
 const RPC_URLS = {
-  1: 'https://mainnet.easydai.app/nZHy9xQ5QJslmP2pCvGSH7JDLxHylM',
+  1: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_TOKEN || ''}`,
   42: `https://kovan.infura.io/v3/${process.env.REACT_APP_INFURA_TOKEN || ''}`,
 }
 
