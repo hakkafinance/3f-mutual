@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import Card from './Card'
@@ -160,6 +161,8 @@ export default function Profile(props) {
     onSaveRemark = () => {},
   } = props
 
+  const { t } = useTranslation()
+
   const [isPending, setIsPending] = useState(false)
   const [errorMessage, setErrorMessage] = useState()
   const handleUpgrade = useCallback(async () => {
@@ -200,16 +203,16 @@ export default function Profile(props) {
           {avatar && <Avatar src={`https://ipfs.infura.io/ipfs/${avatar}`} alt='avatar' />}
           <div>
             <Text>
-              <Bold>Name:</Bold> <span>{name}</span>
+              <Bold>{t('name')}:</Bold> <span>{name}</span>
             </Text>
             <Text>
-              <Bold>ID:</Bold> <span>{id}</span>
+              <Bold>{t('id')}:</Bold> <span>{id}</span>
             </Text>
             <Text>
-              <Bold>Address:</Bold> <span>{shortenAddress(account, 6)}</span>
+              <Bold>{t('address')}:</Bold> <span>{shortenAddress(account, 6)}</span>
             </Text>
             <Text>
-              <Bold>Level:</Bold> <span>{level}</span>
+              <Bold>{t('level')}:</Bold> <span>{level}</span>
             </Text>
             <Row>
               <ProgressBar percentage={points / pointsMax} />
@@ -219,7 +222,7 @@ export default function Profile(props) {
             </Row>
             <Row>
               <SmallButton disabled={!canUpgrade || isPending} onClick={handleUpgrade}>
-                {isPending ? 'Pending...' : 'Upgrade'}
+                {isPending ? t('pending') : t('upgrade')}
               </SmallButton>
               {isLoggedIn ? (
                 <TextButton 
@@ -227,7 +230,7 @@ export default function Profile(props) {
                   href={`https://3box.io/${account}`}
                   target='_blank'
                 >
-                  Edit on 3Box
+                  {t('3boxEdit')}
                 </TextButton>
               ) : (
                 <TextButton 
@@ -236,14 +239,14 @@ export default function Profile(props) {
                   target='_blank'
                   onClick={activate}
                 >
-                  Connect to 3Box
+                  {t('3boxConnect')}
                 </TextButton>
               )}
             </Row>
             <Text error>{errorMessage}</Text>
           </div>
         </ProfileRow>
-        <Title>Referral Links</Title>
+        <Title>{t('referralLinks')}</Title>
         <LinkRow>
           <LinkBox>{`${domain}${id}`}</LinkBox>
           <CopyToClipboard text={`${domain}${id}`}>
@@ -276,8 +279,8 @@ export default function Profile(props) {
             <TextField
               multiline
               height='6rem'
-              label='Openning remark to your referees:'
-              placeholder='Hello guys, wellcome to buy this insurance for MakerDAO emergency shutdown.'
+              label={t('remarkLabel')}
+              placeholder={t('remarkPlaceholder')}
               value={localRemark}
               onChange={event => setLocalRemark(event.target.value)}
             />
@@ -286,26 +289,26 @@ export default function Profile(props) {
               <EditButton
                 onClick={() => setIsEditable(false)}
               >
-                Cancel
+                {t('cancel')}
               </EditButton>
               <SmallButton
                 disabled={!canSave || isSaving}
                 onClick={handleSave}
               >
-                {isSaving ? 'Saving...' : 'Save Change'}
+                {isSaving ? t('saving') : t('saveChange')}
               </SmallButton>
             </Row>
           </>
         ) : (
           <>
-            <Label>Openning remark to your referees:</Label>
+            <Label>{t('remarkLabel')}</Label>
             {localRemark && (
               <TextBlock>
                 <Text>{localRemark}</Text>
               </TextBlock>
             )}
             <EditButton onClick={() => setIsEditable(true)}>
-              {!!localRemark ? 'Edit' : 'Add'}
+              {!!localRemark ? t('edit') : t('add')}
             </EditButton>
           </>
         )}

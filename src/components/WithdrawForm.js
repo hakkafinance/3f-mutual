@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import Card from './Card'
 import CardContent from './CardContent'
 import Text from './Text'
@@ -8,6 +9,9 @@ import EthereumIcon from './EthereumIcon'
 
 export default function WithdrawForm(props) {
   const { dividends = 0, bonus = 0, total = 0, onSubmit = () => {} } = props
+
+  const { t } = useTranslation()
+
   const [isPending, setIsPending] = useState(false)
   const [errorMessage, setErrorMessage] = useState()
 
@@ -27,17 +31,17 @@ export default function WithdrawForm(props) {
     <Card>
       <CardContent>
         <Text>
-          <Bold>Your dividends:</Bold> {dividends} <EthereumIcon />
+          <Bold>{t('yourDividends')}:</Bold> {dividends} <EthereumIcon />
         </Text>
         <Text>
-          <Bold>Your referral bonus:</Bold> {bonus} <EthereumIcon />
+          <Bold>{t('yourReferralBonus')}:</Bold> {bonus} <EthereumIcon />
         </Text>
         <Text>
-          <Bold>Total:</Bold> {total} <EthereumIcon />
+          <Bold>{t('total')}:</Bold> {total} <EthereumIcon />
         </Text>
         <Text error>{errorMessage}</Text>
         <Button disabled={isPending || parseFloat(total) === 0} onClick={onClickButton}>
-          {isPending ? 'Pending...' : 'Withdraw'}
+          {isPending ? t('pending') : t('withdraw')}
         </Button>
       </CardContent>
     </Card>

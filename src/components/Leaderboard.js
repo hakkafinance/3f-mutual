@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { ethers } from 'ethers'
 import Card from './Card'
@@ -42,6 +43,7 @@ const InlineCenter = styled.div`
 
 export default function Leaderboard(props) {
   const { agents = [] } = props
+  const { t } = useTranslation()
 
   const renderRank = (rank) => {
     if (rank === 1) {
@@ -61,10 +63,10 @@ export default function Leaderboard(props) {
         <Table>
           <thead>
             <tr>
-              <th>Rank</th>
-              <th>Name</th>
-              <th>Level</th>
-              <th>Bonus</th>
+              <th>{t('rank')}</th>
+              <th>{t('name')}</th>
+              <th>{t('level')}</th>
+              <th>{t('bonus')}</th>
             </tr>
           </thead>
           <tbody>

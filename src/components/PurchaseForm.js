@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react'
+import { useTranslation, Trans } from 'react-i18next'
 import styled from 'styled-components'
 import Card from './Card'
 import CardContent from './CardContent'
@@ -27,57 +28,59 @@ export default function PurchaseForm(props) {
     onSubmit = () => {},
   } = props
 
+  const { t } = useTranslation()
+
   const [amount, setAmount] = useState(isContractAccount ? 0 : '')
-  const [period, setPeriod] = useState('')
+  const [duration, setDuration] = useState('')
   const [isPending, setIsPending] = useState(false)
   const [errorMessage, setErrorMessage] = useState()
 
   useEffect(() => {
-    onChange(amount, period)
-  }, [amount, onChange, period])
+    onChange(amount, duration)
+  }, [amount, onChange, duration])
 
   useEffect(() => {
     if (parseFloat(paid) < 1e-9) {
-      setErrorMessage('The Ether you pay should be greater than 0.000000001')
+      setErrorMessage(t('minPaidError'))
     } else {
       setErrorMessage('')
     }
-  }, [paid])
+  }, [paid, t])
 
   const onPurchase = useCallback(async () => {
     try {
       setIsPending(true)
       setErrorMessage()
-      await onSubmit(amount, period)
+      await onSubmit(amount, duration)
       setAmount('')
-      setPeriod('')
+      setDuration('')
     } catch (e) {
       setErrorMessage(e.message)
     } finally {
       setIsPending(false)
     }
-  }, [amount, onSubmit, period])
+  }, [amount, onSubmit, duration])
 
   return (
     <Card>
       <CardContent>
         <Text>
-          <Bold>Your Shares:</Bold> {shares}
+          <Bold>{t('yourShares')}:</Bold> {shares}
         </Text>
         <Text>
-          <Bold>Your Active Insurances:</Bold> {insurances}
+          <Bold>{t('yourActiveInsurances')}:</Bold> {insurances}
         </Text>
         <Text>
-          <Bold>Last Bought:</Bold>{' '}
+          <Bold>{t('lastBought')}:</Bold>{' '}
           {lastBought && !isNaN(lastBought)
             ? formatUTC0(lastBought, true)
             : '-'}
         </Text>
         <Text>
-          <Bold>Now:</Bold> {formatUTC0(Date.now(), true)}
+          <Bold>{t('now')}:</Bold> {formatUTC0(Date.now(), true)}
         </Text>
         <Text>
-          Learn more on our{' '}
+          {t('learnMoreOnOur')}{' '}
           <a href='https://3fmutual.hostedwiki.co/' target='_blank' rel="noopener noreferrer">
             Wiki
           </a>.
@@ -86,12 +89,12 @@ export default function PurchaseForm(props) {
       <Divider />
       <CardContent>
         <Text>
-          <Bold>Basis Price:</Bold> {price} <EthereumIcon />
+          <Bold>{t('basisPrice')}:</Bold> {price} <EthereumIcon />
         </Text>
         <TextField
           type='number'
-          label='Unit of Insurance:'
-          placeholder='1.0 unit'
+          label={t('insuranceAmountLabel')}
+          placeholder={t('insuranceAmountPlaceholder')}
           step='0.01'
           value={amount}
           onChange={event => setAmount(event.target.value)}
@@ -99,29 +102,31 @@ export default function PurchaseForm(props) {
         {!isContractAccount &&
           <TextField
             type='number'
-            label='Time:'
-            placeholder='0 ~ 100 days'
+            label={t('durationLabel')}
+            placeholder={t('durationPlaceholder')}
             step='1'
-            value={period}
+            value={duration}
             onChange={event => {
               if (event.target.value) {
-                setPeriod(Math.min(Math.abs(Math.round(event.target.value)), 100))
+                setDuration(Math.min(Math.abs(Math.round(event.target.value)), 100))
               } else {
-                setPeriod('')
+                setDuration('')
               }
             }}
           />
         }
         {paid && (
           <Summary>
-            You will pay <Bold>{paid}</Bold>
-            <EthereumIcon /> for <Bold>{amount}</Bold> units for{' '}
-            <Bold>{period}</Bold> days
+            <Trans i18nKey='insuranceSummary'>
+              You will pay <Bold>{{ paid }}</Bold>
+              <EthereumIcon /> for <Bold>{{ amount }}</Bold> units for
+              <Bold>{{ duration }}</Bold> days
+            </Trans>
           </Summary>
         )}
         <Text error>{errorMessage}</Text>
         <Button disabled={isPending || !!errorMessage} onClick={onPurchase}>
-          {isPending ? 'Pending...' : 'Purchase'}
+          {isPending ? t('pending') : t('purchase')}
         </Button>
       </CardContent>
     </Card>

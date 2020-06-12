@@ -6,7 +6,7 @@ import { WalletConnectConnector } from './Walletconnect'
 const POLLING_INTERVAL = 8000
 
 const RPC_URLS = {
-  1: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_TOKEN || ''}`,
+  1: process.env.REACT_APP_PROVIDER_URL || '',
   42: `https://kovan.infura.io/v3/${process.env.REACT_APP_INFURA_TOKEN || ''}`,
 }
 

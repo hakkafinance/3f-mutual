@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import Card from './Card'
 import CardContent from './CardContent'
 import Text from './Text'
@@ -9,6 +10,9 @@ import EthereumIcon from './EthereumIcon'
 
 export default function ClaimForm(props) {
   const { insurances = 0, estimatedCompensation = 0, canClaim, onSubmit = () => {} } = props
+  
+  const { t } = useTranslation()
+  
   const [isPending, setIsPending] = useState(false)
   const [errorMessage, setErrorMessage] = useState()
 
@@ -28,23 +32,20 @@ export default function ClaimForm(props) {
     <Card>
       <CardContent>
         <Text>
-          <Bold>
-            If MakerDAO shutdowned, you can claim the compensation from the
-            contract by pressing the button below!
-          </Bold>
+          <Bold>{t('claimInstruction')}</Bold>
         </Text>
       </CardContent>
       <Divider />
       <CardContent>
         <Text>
-          <Bold>Your Active Insurances:</Bold> {insurances} <EthereumIcon />
+          <Bold>{t('yourActiveInsurances')}:</Bold> {insurances} <EthereumIcon />
         </Text>
         <Text>
-          <Bold>Estimated Compensation:</Bold> {estimatedCompensation} <EthereumIcon />
+          <Bold>{t('estimatedCompensation')}:</Bold> {estimatedCompensation} <EthereumIcon />
         </Text>
         <Text error>{errorMessage}</Text>
         <Button disabled={isPending || !canClaim || parseFloat(insurances) === 0} onClick={onClickButton}>
-          {isPending ? 'Pending...' : 'Claim'}
+          {isPending ? t('pending') : t('claim')}
         </Button>
       </CardContent>
     </Card>

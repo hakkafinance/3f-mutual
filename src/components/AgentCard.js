@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import Card from './Card'
 import CardContent from './CardContent'
@@ -52,6 +53,7 @@ const Greeting = styled.p`
 
 export default function AgentCard(props) {
   const { isAgent = false, name = '', id = 0, level = 0, greeting = '', image = '' } = props
+  const { t } = useTranslation()
 
   return (
     <Card>
@@ -62,16 +64,16 @@ export default function AgentCard(props) {
               {!!image.length && <Avatar src={image} alt='agent avatar' />}
               <div>
                 <Text>
-                  <Bold>Your Agent's Name:</Bold> {name}
+                  <Bold>{t('agentName')}:</Bold> {name}
                 </Text>
                 <Text>
-                  <Bold>Your Agent's ID:</Bold> {id}
+                  <Bold>{t('agentId')}:</Bold> {id}
                 </Text>
                 <Text>
-                  <Bold>Your Agent's Level:</Bold> {level}
+                  <Bold>{t('agentLevel')}:</Bold> {level}
                 </Text>
                 <NoteText>
-                  * Agent is the person to promote you to buy insurance.
+                  * {t('agentExplanation')}
                 </NoteText>
               </div>
             </Row>
@@ -79,7 +81,7 @@ export default function AgentCard(props) {
           </>
         ) : (
           <Text>
-            <Bold>You don't have any agent!</Bold>
+            <Bold>{t('noAgentMessage')}</Bold>
           </Text>
         )}
       </CardContent>

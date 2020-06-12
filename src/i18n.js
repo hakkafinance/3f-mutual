@@ -14,11 +14,18 @@ i18next
     react: {
       useSuspense: true,
     },
-    lng: 'zh',
-    fallbackLng: 'en',
-    preload: ['zh'],
+    whitelist: ['zh', 'en'],
+    nonExplicitWhitelist: true,
+    fallbackLng: {
+      'zh': ['zh-CN', 'zh-TW', 'en-US'],
+      'zh-TW': ['zh-TW', 'zh-CN', 'en-US'],
+      'default': ['en-US']
+    },
     keySeparator: false,
     interpolation: { escapeValue: false },
+    detection: {
+      order: ['navigator', 'cookie', 'localStorage'],
+    }
   })
 
 export default i18next

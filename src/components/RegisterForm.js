@@ -1,4 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react'
+import { useTranslation, Trans } from 'react-i18next'
 import styled from 'styled-components'
 import Card from './Card'
 import CardContent from './CardContent'
@@ -28,6 +29,9 @@ const CONSECUTIVE_SPACE_ERROR = 6
 
 export default function RegisterForm(props) {
   const { onSubmit = () => {} } = props
+
+  const { t } = useTranslation()
+
   const [name, setName] = useState('')
   const [isPending, setIsPending] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -75,29 +79,33 @@ export default function RegisterForm(props) {
       <CardContent>
         <TextField
           type='text'
-          label='Name'
+          label={t('name')}
           value={name}
           onChange={event => setName(event.target.value)}
         />
-        <Label>Your Name Rules</Label>
+        <Label>{t('nameRules')}</Label>
         <ul>
           <RuleItem active={formatErrors.includes(LENGTH_ERROR)}>
-            must consist of <strong>1~32</strong> characters
+            <Trans i18nKey='mustConsistOfCharacters'>
+              must consist of <strong>1~32</strong> characters
+            </Trans>
           </RuleItem>
           <RuleItem active={formatErrors.includes(CHARACTER_ERROR)}>
-            must use only <strong>a-z/0-9 and spaces</strong>
+            <Trans i18nKey='mustUseOnly'>
+              must use only <strong>a-z/0-9 and spaces</strong>
+            </Trans>
           </RuleItem>
           <RuleItem active={formatErrors.includes(PREFIX_ERROR)}>
-            must NOT begin with 0x
+            {t('mustNotBeginWith0x')}
           </RuleItem>
           <RuleItem active={formatErrors.includes(ONLY_DIGITS_ERROR)}>
-            must NOT consist of digits only
+            {t('mustNotConsistOfDigitsOnly')}
           </RuleItem>
           <RuleItem active={formatErrors.includes(SPACE_ERROR)}>
-            must NOT begin with or end with spaces
+            {t('mustNotBeginWithOrEndWithSpaces')}
           </RuleItem>
           <RuleItem active={formatErrors.includes(CONSECUTIVE_SPACE_ERROR)}>
-            must NOT contain consecutive spaces
+            {t('mustNotContainConsecutiveSpaces')}
           </RuleItem>
         </ul>
         <Text error>{errorMessage}</Text>
@@ -105,7 +113,7 @@ export default function RegisterForm(props) {
           onClick={onClickButton}
           disabled={isPending || !!formatErrors.length}
         >
-          {isPending ? 'Pending...' : 'Pay 0.01 ETH to Register'}
+          {isPending ? t('pending') : t('payToRegister', { amount: 0.01 })}
         </Button>
       </CardContent>
     </Card>

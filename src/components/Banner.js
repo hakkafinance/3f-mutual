@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import Container from './Container'
 
@@ -39,24 +40,25 @@ export default function Banner(props) {
     totalInsurances = 0,
     totalAgents = 0,
   } = props
+  const { t } = useTranslation()
 
   return (
     <BannerWrapper>
       <BannerContainer flex>
         <BannerItem>
-          <Title>ETH in Pool</Title>
+          <Title>{t('ethInPool')}</Title>
           <NumberText>{pot}</NumberText>
         </BannerItem>
         <BannerItem>
-          <Title>Total Shares</Title>
+          <Title>{t('totalShares')}</Title>
           <NumberText>{totalShares}</NumberText>
         </BannerItem>
         <BannerItem>
-          <Title>All Active Insurances</Title>
+          <Title>{t('allActiveInsurances')}</Title>
           <NumberText>{totalInsurances}</NumberText>
         </BannerItem>
         <BannerItem>
-          <Title>Agents</Title>
+          <Title>{t('agents')}</Title>
           <NumberText>{totalAgents}</NumberText>
         </BannerItem>
       </BannerContainer>

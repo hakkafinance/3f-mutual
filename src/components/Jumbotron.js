@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation, Trans } from 'react-i18next'
 import styled, { keyframes } from 'styled-components'
 import Container from './Container'
 import Bold from './Bold'
@@ -79,24 +80,26 @@ const Strong = styled(Bold)`
 
 export default function Jumbotron(props) {
   const { ended, odd } = props
+  const { t } = useTranslation()
 
   return (
     <JumbotronWrapper>
       <Container flex>
         <div>
           <Headline>
-            My insurance, <br /> Your insurance, <br />Insurance for all!
+            {t('myInsurance')} <br /> {t('yourInsurance')} <br />{t('insuranceForAll')}
           </Headline>
           <Bulletin>
             {ended ? (
               <>
-                <div>MakerDAO emergency shutdown!!</div>
-                <div>Go claim compensation!!</div>
+                <div>MakerDAO {t('emergencyShutdown')}</div>
+                <div>{t('claimCompensation')}</div>
               </>
             ) : (
               <span>
-                Get <Strong>{odd} ×</Strong> <EthereumIcon /> if MakerDAO
-                shutdowns today.
+                <Trans i18nKey='returnIfShutdown'>
+                  Get <Strong>{{odd}}</Strong> <EthereumIcon /> if MakerDAO shutdowns today.
+                </Trans>
               </span>
             )}
           </Bulletin>

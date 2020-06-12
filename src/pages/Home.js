@@ -8,6 +8,7 @@ import React, {
 import useSWR from 'swr'
 import { useSnackbar } from 'notistack'
 import { useWeb3React } from '@web3-react/core'
+import { useTranslation, Trans } from 'react-i18next'
 import { ethers } from 'ethers'
 import BigNumber from 'bignumber.js'
 import styled from 'styled-components'
@@ -145,6 +146,8 @@ function renderTransactionActions(chainId, hash, close) {
 }
 
 export default function Home() {
+  const { t } = useTranslation()
+
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
   const { account } = useWeb3React()
   const { chainId, library: readOnlyLibrary } = useWeb3React(READ_ONLY)
@@ -559,11 +562,11 @@ export default function Home() {
   }, [account, chainId, closeSnackbar, contract, enqueueSnackbar, refreshProfile])
 
   const tabs = [
-    { text: 'Purchase', index: 0 },
-    { text: 'Vault', index: 1 },
-    { text: 'Agent', index: 2, badge: isAgent },
-    { text: 'Profile', index: 3 },
-    { text: 'Leaderboard', index: 4 },
+    { text: t('purchase'), index: 0 },
+    { text: t('vault'), index: 1 },
+    { text: t('agent'), index: 2, badge: isAgent },
+    { text: t('profile'), index: 3 },
+    { text: t('leaderboard'), index: 4 },
   ]
   const [tabIndex, setTabIndex] = useState(0)
 
@@ -591,24 +594,25 @@ export default function Home() {
               <span role='img' aria-label='caution'>
                 🚨
               </span>{' '}
-              Alpha Version! Smart contracts have NOT been audited. Use at own risk!
+              {t('alphaVersionMessage')}
             </div>
             <div>
               <span role='img' aria-label='caution'>
                 🚨
               </span>{' '}
-              This Insurance is for {targetAsset}{' '}
-              <Icon src={saiImage} />{' '}
-              shutdown.
+              <Trans i18nKey='insuranceTargetMessage'>
+                This Insurance is for {{ targetAsset }} <Icon src={saiImage} /> shutdown.
+              </Trans>
             </div>
           </WarningMessage>
           <TabPanel value={tabIndex} index={0}>
             {ended ? (
               <Box flex direction='column' alignItems='center'>
-                <Text>MakerDAO emergency shutdown had happened.</Text>
+                <Text>{t('emergencyShutdownHadHappend')}</Text>
                 <Text>
-                  Please claim your compensation{' '}
-                  <Anchor onClick={() => setTabIndex(1)}>Here</Anchor>
+                  <Trans i18nKey='claimCompensationPlease'>
+                    Please claim your compensation <Anchor onClick={() => setTabIndex(1)}>Here</Anchor>
+                  </Trans>
                 </Text>
               </Box>
             ) : (
@@ -635,10 +639,8 @@ export default function Home() {
                 </Box>
                 {expiringUnits && (
                   <>
-                    <Title>Trends</Title>
-                    <SubTitle>
-                      Total insurances in the system in next 100 days
-                    </SubTitle>
+                    <Title>{t('trends')}</Title>
+                    <SubTitle>{t('trendsChartDescription')}</SubTitle>
                     <LineChart
                       value={calculateLeftUnits(expiringUnits).map(v =>
                         parseFloat(ethers.utils.formatEther(v)),
@@ -661,8 +663,8 @@ export default function Home() {
                 )}
                 {userExpiringUnits && (
                   <>
-                    <Title>Mine</Title>
-                    <SubTitle>My insurance in next 100 days</SubTitle>
+                    <Title>{t('mine')}</Title>
+                    <SubTitle>{t('mineChartDescription')}</SubTitle>
                     <LineChart
                       value={calculateLeftUnits(userExpiringUnits).map(v =>
                         parseFloat(ethers.utils.formatEther(v)),
