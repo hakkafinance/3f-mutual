@@ -21,7 +21,7 @@
   "durationLabel": "保险天数",
   "durationPlaceholder": "0天 ~ 100天",
   "edit": "编辑",
-  "emergencyShutdown": "MakerDAO 紧急关停！",
+  "emergencyShutdown": "紧急关停！",
   "emergencyShutdownHadHappend": "MakerDAO 紧急关停已发生！",
   "estimatedCompensation": "预估理赔金",
   "ethInPool": "池内以太币",
